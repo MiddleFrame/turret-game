@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "566303616600",
+    "project_id": "turel-mini-game",
+    "storage_bucket": "turel-mini-game.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:566303616600:android:55e215345cc890bc0b642d",
+        "android_client_info": {
+          "package_name": "com.MiddleFrame.Turelminigame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "566303616600-ld1hvcdhu10inpdi3ijdutpm6gpjf85m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwoDz4i6fK2Xg9WLl4xitJe80ONjthhl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "566303616600-ld1hvcdhu10inpdi3ijdutpm6gpjf85m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
