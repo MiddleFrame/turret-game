@@ -10,7 +10,7 @@ public class ThemeManager : MonoBehaviour
     public List<Graphic> DarkElements;
     public Theme[] themes;
     int _theme =0;
-    public Theme CurrentTheme { get; set; }
+    public Theme CurrentTheme { get; set; } 
 
     public GameObject ButtonTheme;
     public static ThemeManager instance;
@@ -18,6 +18,7 @@ public class ThemeManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        CurrentTheme = themes[0];
     }
     private void UpdateTheme()
     {
@@ -47,7 +48,7 @@ public class ThemeManager : MonoBehaviour
 
     public void ChangeTheme()
     {
-        
+        Blur.EnableOrDisableBlur(false);
         _theme++;
         Debug.Log("ChangeTheme " + _theme);
         if (_theme >= themes.Length)
@@ -64,6 +65,10 @@ public class ThemeManager : MonoBehaviour
         SlideButton();
         ChangeControl.instance.ChangeController(ChangeControl.instance.CurrentControl);
         GameManager.settings.needSave = true;
+      /*  if (GameManager.Pause)
+        {
+            Blur.EnableOrDisableBlur(true);
+        }*/
     }
 
     private void SlideButton()

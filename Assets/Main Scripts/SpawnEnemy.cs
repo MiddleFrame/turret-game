@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SpawnEnemy : MonoBehaviour
 {
+     float _spawnSpeed = 3.5f;
     [SerializeField] GameObject _shootgun;
     [SerializeField] GameObject[] _enemys;
     [SerializeField] GameObject[] _spawnPoints;
@@ -18,27 +19,36 @@ public class SpawnEnemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SpawnInSec(1));
+        StartCoroutine(SpawnInSec());
     }
 
-    IEnumerator SpawnInSec(float sec)
+    IEnumerator SpawnInSec()
     {
         while (true) {
             if(!GameManager.Pause)
             Spawn();
-            yield return new WaitForSeconds(sec);
+            yield return new WaitForSeconds(_spawnSpeed);
         }
     }
 
 
     void Spawn()
     {
+        
         int j = Random.Range(1, 101);
         int step = 0;
         for(int f =0; f < _killingEnemy.Length; f++)
         {
-            if (SpinGun.EnemyKilling >= _killingEnemy[f])
-                step = f;
+            if (step<f )
+            {
+                if (SpinGun.EnemyKilling >= _killingEnemy[f])
+                {
+                    step = f;
+                    _spawnSpeed -= 0.75f;
+                }
+                else break;
+            }
+            
         }
         for(int f=0; f < _chanses[step].Length; f++)
         {
@@ -60,8 +70,9 @@ public class SpawnEnemy : MonoBehaviour
         }
         _lastColor = g;
         enemy.GetComponent<SpriteRenderer>().color = _colors[g];
+        enemy.GetComponent<Enemy>().particleSystem.startColor = _colors[g];
         int i = Random.Range(0,4);
-        Debug.Log(i);
+       
         if(enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.Triangle || enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.SquareWithShield)
         {
             enemy.transform.Rotate(0,0, (i-2)*90);

@@ -7,4 +7,6 @@ public class EnemyType: ScriptableObject
     public Enemy.typeEnemy type;
     public float speed;
     public int hp;
+    public int chanseMoney;
+    public int moneyCount;
 }

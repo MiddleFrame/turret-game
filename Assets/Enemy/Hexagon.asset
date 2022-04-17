@@ -15,3 +15,5 @@ MonoBehaviour:
   type: 2
   speed: 0.2
   hp: 5
+  chanseMoney: 100
+  moneyCount: 2

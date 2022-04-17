@@ -15,7 +15,7 @@ MonoBehaviour:
   androidSettings:
     AppKey: DisPo4UOnE
     AdmobAppID: ca-app-pub-4973750815225055~4307055912
-    BundleID: 
+    BundleID: com.MiddleFrame.Turelminigame
     GooglePlayStore: 1
     ChineseAndroidStores: 0
     Channel: 

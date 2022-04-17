@@ -47,6 +47,7 @@ public class SettingArrow : MonoBehaviour
     }
     public void OnChanged()
     {
+        Blur.EnableOrDisableBlur(false) ;
         switch (ChangeControl.instance.CurrentControl)
         {
             case 0:
@@ -65,5 +66,7 @@ public class SettingArrow : MonoBehaviour
                 break;
         }
         GameManager.settings.needSave = true;
+        if(GameManager.Pause)
+        Blur.EnableOrDisableBlur(true);
     }
 }

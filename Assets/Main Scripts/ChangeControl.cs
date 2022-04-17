@@ -19,6 +19,8 @@ public class ChangeControl : MonoBehaviour
    
     public void ChangeController(int i)
     {
+        Debug.Log("Change Control "+i);
+        Blur.EnableOrDisableBlur(false);
         CurrentControl = i;
         GameManager.settings.Control = i;
         for (int j=0; j < _controls.Length; j++) 
@@ -43,6 +45,10 @@ public class ChangeControl : MonoBehaviour
         }
         GameManager.settings.needSave = true;
         GameStats.MenuController = false;
+        if (GameManager.Pause)
+        {
+            Blur.EnableOrDisableBlur(true);
+        }
     }
 }
 
@@ -53,7 +59,7 @@ public class Settings
     public float firstControlValue;
     public float secondControlValue;
     public float thirdControlValue;
-    public bool ThemeIsDark=false;
+    public bool ThemeIsDark=true;
     public bool enableSound = true;
     public int Control;
 

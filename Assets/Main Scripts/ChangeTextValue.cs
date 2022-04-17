@@ -9,6 +9,8 @@ public class ChangeTextValue : MonoBehaviour
     TextMeshProUGUI _score;
     [SerializeField] TextMeshProUGUI _menuScore;
     public TextMeshProUGUI hightScore;
+    public TextMeshProUGUI money;
+    public TextMeshProUGUI MenuMoney;
     public GameObject hightSroreStar;
     public static ChangeTextValue instance;
 
@@ -19,7 +21,7 @@ public class ChangeTextValue : MonoBehaviour
     }
     private void Start()
     {
-        
+        UpdateMoney();
     }
     public void UpdateScore(bool newHight = false)
     {
@@ -31,5 +33,11 @@ public class ChangeTextValue : MonoBehaviour
             hightScore.text = GameStats.PointInGame + "";
             hightSroreStar.SetActive(true);
         }
+    }
+
+    public void UpdateMoney()
+    {
+        money.text = GameManager.playerStats.Money + "";
+        MenuMoney.text = money.text;
     }
 }

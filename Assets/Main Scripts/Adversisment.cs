@@ -6,6 +6,7 @@ public class Adversisment : MonoBehaviour
 {
     [SerializeField] GameObject _backgroundBlur;
     private Yodo1U3dBannerAdView bannerAdView;
+    private int _typeReward = 0;
     private void Start()
     {
         Yodo1AdBuildConfig config = new Yodo1AdBuildConfig().enableUserPrivacyDialog(true);
@@ -31,7 +32,10 @@ public class Adversisment : MonoBehaviour
 
     private void OnAdReceivedRewardEvent()
     {
-        ContinueGame();
+        if (_typeReward == 0)
+            ContinueGame();
+        else if (_typeReward == 1)
+            MoneyReward();
     }
    private void OnRewardedAdClosedEvent()
     {
@@ -50,11 +54,19 @@ public class Adversisment : MonoBehaviour
         GameStats.ContinueGame();
     }
 
-    public void ShowReward()
+    private void MoneyReward()
+    {
+        GameManager.playerStats.Money += 10;
+        ChangeTextValue.instance.UpdateMoney();
+        Analytic.instance.GoldPrice();
+    }
+
+    public void ShowReward(int i =0)
     {
         bool isLoaded = Yodo1U3dMas.IsRewardedAdLoaded();
         if (isLoaded)
         {
+            _typeReward = i;
             Yodo1U3dMas.ShowRewardedAd();
         }
     }
@@ -72,8 +84,40 @@ public class Adversisment : MonoBehaviour
 
         // Create a 320x50 banner at top of the screen
         bannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+        // Ad Events
+        bannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        bannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        bannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        bannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        bannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
         // Load banner ads, the banner ad will be displayed automatically after loaded
         bannerAdView.LoadAd();
+    }
+
+    private void OnBannerAdLoadedEvent(Yodo1U3dBannerAdView adView)
+    {
+        // Banner ad is ready to be shown.
+        Debug.Log("[Yodo1 Mas] OnBannerAdLoadedEvent event received");
+    }
+
+    private void OnBannerAdFailedToLoadEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
+    {
+        Debug.Log("[Yodo1 Mas] OnBannerAdFailedToLoadEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnBannerAdOpenedEvent(Yodo1U3dBannerAdView adView)
+    {
+        Debug.Log("[Yodo1 Mas] OnBannerAdOpenedEvent event received");
+    }
+
+    private void OnBannerAdFailedToOpenEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
+    {
+        Debug.Log("[Yodo1 Mas] OnBannerAdFailedToOpenEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnBannerAdClosedEvent(Yodo1U3dBannerAdView adView)
+    {
+        Debug.Log("[Yodo1 Mas] OnBannerAdClosedEvent event received");
     }
 }
 
