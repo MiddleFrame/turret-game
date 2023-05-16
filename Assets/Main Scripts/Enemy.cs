@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
+
 [RequireComponent(typeof(SpriteRenderer))]
 public class Enemy : MonoBehaviour
 {
@@ -10,8 +13,9 @@ public class Enemy : MonoBehaviour
     public EnemyType type;
     GameObject _moneyText;
     [SerializeField] GameObject _money;
+    private Vector3 _startPosition;
     int _hp;
-    float selfspeed = 1f;
+    float selfspeed = 0.5f;
     //Number of spawn point
     int _i;
    GameObject[] _spawnPoints;
@@ -25,22 +29,15 @@ public class Enemy : MonoBehaviour
         this._hp = type.hp;
         _shootGun = shootGun;
         _spawnPoints = spawnPoints;
-        _moneyText = GameObject.Find("MainMoney");
-        transform.position = _spawnPoints[i].transform.position;
-        if (i == 2 || i == 0)
-        {
-            selfspeed /= 2f;
-        }
+        _moneyText = GameManager.instance.mainMoney;
+        transform.position = new Vector3(4*Mathf.Sin(i),6*Mathf.Cos(i),0);
+        _startPosition = transform.position;
         _dist = (transform.position - _shootGun.transform.position).magnitude;
-        if(type.type == Enemy.typeEnemy.SquareWithShield)
-        {
-            if(Random.Range(0, 2) == 0)
-            {
-              var shields =  gameObject.GetComponentsInChildren<Transform>();
-                shields[shields.Length - 1].gameObject.SetActive(false);
-            }
-        }
-        
+        if (type.type != Enemy.typeEnemy.SquareWithShield) return;
+        if (Random.Range(0, 2) == 1) return;
+        var shields =  gameObject.GetComponentsInChildren<Transform>();
+        shields[shields.Length - 1].gameObject.SetActive(false);
+
     }
 
     // Update is called once per frame
@@ -49,53 +46,48 @@ public class Enemy : MonoBehaviour
         if (!GameManager.Pause)
         {
             _way += Time.deltaTime * type.speed * selfspeed;
-            transform.position = Vector3.Lerp(_spawnPoints[_i].transform.position, _shootGun.transform.position, _way / _dist);
+            transform.position = Vector3.Lerp(_startPosition, _shootGun.transform.position, _way / _dist);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-       
-        if(collision.tag == "Bullet" )
+        if (!collision.CompareTag("Bullet")) return;
+        _hp--;
+        if (_hp == 0)
         {
-            _hp--;
-            if (_hp == 0)
+            giveMoney = true;
+            if (type.type== typeEnemy.Hexagon)
             {
-                giveMoney = true;
-                if (type.type== typeEnemy.Hexagon)
-                {
-                    GameStats.PointInGame+=2;
-                }
-                else
-                {
-                    GameStats.PointInGame++;
-                }
-                ChangeTextValue.instance.UpdateScore();
-               SpinGun.EnemyKilling++;
-                gameObject.GetComponent<Collider2D>().enabled = false;
-                GetComponent<Animation>().Play("Death");
+                GameStats.PointInGame+=2;
             }
             else
             {
-                GetComponent<Animation>().Play();
+                GameStats.PointInGame++;
             }
+            ChangeTextValue.instance.UpdateScore();
+            SpinGun.EnemyKilling++;
+            gameObject.GetComponent<Collider2D>().enabled = false;
+            GetComponent<Animation>().Play("Death");
         }
-        
+        else
+        {
+            GetComponent<Animation>().Play();
+        }
+
     }
     bool giveMoney = true;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
-        if (collision.gameObject.tag == "Player")
-         {
-            giveMoney = false;
-            gameObject.GetComponent<Collider2D>().enabled = false;
-            GetComponent<Animation>().Play("Death");
-         }
-            
+        if (!collision.gameObject.CompareTag("Player")) return;
+        giveMoney = false;
+        gameObject.GetComponent<Collider2D>().enabled = false;
+        GetComponent<Animation>().Play("Death");
+
     }
     public void Death()
     {
+        SpinGun.Gun.RemoveEnemy(gameObject);
         particleSystem.Play();
         if (giveMoney)
         {

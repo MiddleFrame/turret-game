@@ -1,10 +1,9 @@
-﻿using UnityEditor;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
+    using UnityEditor;
+    using System.IO;
+    using System.Xml;
+
     public class Yodo1AdUtils
     {
         /// <summary>

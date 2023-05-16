@@ -10,7 +10,7 @@ public class LoadGame {
             GameManager.settings = new Settings();
         Debug.Log(JsonUtility.ToJson(GameManager.settings));
         GameStats.MenuController = true;
-        ChangeControl.instance.ChangeController(GameManager.settings.Control);
+        //ChangeControl.instance.ChangeController(GameManager.settings.Control);
 
         if (!GameManager.settings.enableSound)
             Sound.instance.ChangeSound();
@@ -22,7 +22,7 @@ public class LoadGame {
            
        
         
-       SettingArrow.instance.CheckValueSlider();
+//       SettingArrow.instance.CheckValueSlider();
         GameManager.settings.needSave = false;
 
 

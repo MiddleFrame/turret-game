@@ -16,7 +16,7 @@ public static class GameStats
         GameManager.playerStats.life = GameManager.upgrades.lifes;
         ChangeTextValue.instance.UpdateScore();
         var side = SpinGun.Player.GetComponent<SpinGun>().side=1;
-        
+        SpinGun.Gun.RemoveEnemies();
         Shoot.instance.InstantRecharge();
         SpinGun.Player.transform.rotation = Quaternion.Euler(0, 0, 90*side);//new Quaternion(0,0,0, 0);
         var enemy = Object.FindObjectsOfType<Enemy>();

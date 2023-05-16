@@ -1,15 +1,15 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Collections.Generic;
-using UnityEngine.Networking;
-using System.Collections;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
+    using UnityEngine;
+    using UnityEditor;
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Text;
+    using System.Collections.Generic;
+    using UnityEngine.Networking;
+    using System.Collections;
+
     public class Yodo1AdWindows : EditorWindow
     {
         private static string app_key = string.Empty;
@@ -186,8 +186,6 @@ namespace Yodo1.MAS
 
             GUILayout.BeginVertical(gUIStyle2, new GUILayoutOption[0]);
 
-            GUILayout.Label("Select the MAS SDK to be integrated:");
-
             string imagePath = Application.dataPath + "/Yodo1/MAS/Editor/refresh.png";
             FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
             byte[] thebytes = new byte[fs.Length];
@@ -213,7 +211,6 @@ namespace Yodo1.MAS
                     resultString = RequestAdmobConfig(this.adSettings.iOSSettings.AppKey);
                     this.SaveConfig();
                 }
-
             }
             else
             {
@@ -283,7 +280,7 @@ namespace Yodo1.MAS
             }
             if (selectPlarformTab == PlatfromTab.iOS)
             {
-                if (!Yodo1PostProcessiOS.CheckConfiguration_iOS(this.adSettings))
+                if (!Yodo1AdSettingsSave.CheckConfiguration_iOS(this.adSettings))
                 {
                     return;
                 }
@@ -396,7 +393,7 @@ namespace Yodo1.MAS
 
         private IEnumerator SendUrl(string url, ApiCallback callback)
         {
-            using (WWW www = new WWW(url))
+            using (UnityWebRequest www = new UnityWebRequest(url))
             {
                 yield return www;
                 if (www.error != null)
@@ -406,7 +403,7 @@ namespace Yodo1.MAS
                 }
                 else
                 {
-                    callback(www.text);
+                    callback(www.downloadHandler.text);
                 }
             }
         }

@@ -7,13 +7,14 @@ namespace Yodo1.MAS
     public class Yodo1U3dBannerAdView
     {
         private static List<Yodo1U3dBannerAdView> BannerAdViews = new List<Yodo1U3dBannerAdView>();
-        private readonly string indexId = ((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000) + "";
+        private readonly string indexId = (((DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000) + BannerAdViews.Count) + "";
 
         private Yodo1U3dBannerAdSize adSize;
         private Yodo1U3dBannerAdPosition adPosition;
-        private string adPlacement = "";
+        private string adPlacement = string.Empty;
         private int adPositionX = 0;
         private int adPositionY = 0;
+
 
         private Action<Yodo1U3dBannerAdView> _onBannerAdLoadedEvent;
         private Action<Yodo1U3dBannerAdView, Yodo1U3dAdError> _onBannerAdFailedToLoadEvent;
@@ -185,7 +186,14 @@ namespace Yodo1.MAS
         /// </summary>
         public void LoadAd()
         {
+
+#if UNITY_EDITOR
+
+            Yodo1EditorAds.ShowBannerAdsInEditor(indexId, (int)adPosition, (int)adSize.AdType, adPositionX, adPositionY);
+#endif
+#if !UNITY_EDITOR
             BannerV2("loadBannerAdV2");
+#endif
         }
 
         /// <summary>
@@ -193,7 +201,12 @@ namespace Yodo1.MAS
         /// </summary>
         public void Hide()
         {
+#if UNITY_EDITOR
+            Yodo1EditorAds.HideBannerAdsInEditor(indexId);
+#endif
+#if !UNITY_EDITOR
             BannerV2("hideBannerAdV2");
+#endif
         }
 
         /// <summary>
@@ -201,7 +214,13 @@ namespace Yodo1.MAS
         /// </summary>
         public void Show()
         {
+#if UNITY_EDITOR
+            Yodo1EditorAds.ShowBannerAdsInEditor(indexId, (int)adPosition, (int)adSize.AdType, adPositionX, adPositionY);
+#endif
+#if !UNITY_EDITOR
             BannerV2("showBannerAdV2");
+#endif
+
         }
 
         /// <summary>
@@ -209,6 +228,9 @@ namespace Yodo1.MAS
         /// </summary>
         public void Destroy()
         {
+#if UNITY_EDITOR
+            Yodo1EditorAds.DestroyBannerAdsInEditor(indexId);
+#endif
             BannerV2("destroyBannerAdV2");
             Yodo1U3dMasCallback.InvokeEvent(_onBannerAdClosedEvent, this);
             BannerAdViews.Remove(this);

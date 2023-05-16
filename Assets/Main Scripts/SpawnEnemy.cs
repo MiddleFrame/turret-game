@@ -69,19 +69,20 @@ public class SpawnEnemy : MonoBehaviour
             g = Random.Range(0, _colors.Length);
         }
         _lastColor = g;
+        var Enemy = enemy.GetComponent<Enemy>();
         enemy.GetComponent<SpriteRenderer>().color = _colors[g];
-        enemy.GetComponent<Enemy>().particleSystem.startColor = _colors[g];
-        int i = Random.Range(0,4);
-       
-        if(enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.Triangle || enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.SquareWithShield)
+        Enemy.particleSystem.startColor = _colors[g];
+        int i = Random.Range(0,360);
+        
+        if(Enemy.type.type == Enemy.typeEnemy.Triangle || enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.SquareWithShield)
         {
             enemy.transform.Rotate(0,0, (i-2)*90);
         }
-        else if(enemy.GetComponent<Enemy>().type.type == Enemy.typeEnemy.Square)
+        else if(Enemy.type.type == Enemy.typeEnemy.Square)
         {
             int angle = Random.Range(0, 90);
             enemy.transform.Rotate(0, 0, angle);
         }
-        enemy.GetComponent<Enemy>().Init(i,_spawnPoints, _shootgun);
+        Enemy.Init(i,_spawnPoints, _shootgun);
     }
 }

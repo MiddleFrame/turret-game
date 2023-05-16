@@ -63,7 +63,7 @@ public class ThemeManager : MonoBehaviour
         CurrentTheme = themes[_theme];
         UpdateTheme();
         SlideButton();
-        ChangeControl.instance.ChangeController(ChangeControl.instance.CurrentControl);
+//        ChangeControl.instance.ChangeController(ChangeControl.instance.CurrentControl);
         GameManager.settings.needSave = true;
       /*  if (GameManager.Pause)
         {

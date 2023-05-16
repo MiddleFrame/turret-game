@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
     public class Yodo1AdEditorConstants
     {

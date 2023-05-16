@@ -1,20 +1,11 @@
-﻿
-using UnityEngine;
-using UnityEngine.Networking;
-using UnityEditor;
-using UnityEditor.Callbacks;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-#if UNITY_IOS
-using UnityEditor.iOS.Xcode;
-#endif
-using System.Xml;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
+    using UnityEngine;
+    using UnityEditor;
+    using UnityEditor.Callbacks;
+    using System.IO;
+    using System.Xml;
+
     public class Yodo1PostProcessAndroid
     {
         [PostProcessBuild()]
@@ -380,6 +371,35 @@ namespace Yodo1.MAS
                     return curr;
                 }
                 curr = curr.NextSibling;
+            }
+            return null;
+        }
+
+        public static XmlNode FindLauncherActivityNode(XmlNode applicaiton)
+        {
+            XmlNode acNode = applicaiton.FirstChild;
+            while (acNode != null)
+            {
+                if(acNode.Name.Equals("activity"))
+                {
+                    XmlNode intentFilterNode = acNode.FirstChild;
+                    while(intentFilterNode != null)
+                    {
+                        if(intentFilterNode.Name.Equals("intent-filter"))
+                        {
+                            XmlNode launcherCategeryNode = FindChildNodeWithAttribute(intentFilterNode, "category", "android:name", "android.intent.category.LAUNCHER");
+                            if(launcherCategeryNode != null)
+                            {
+                                return acNode;
+                            }
+                        }
+
+                        intentFilterNode = intentFilterNode.NextSibling;
+                    }
+                    
+                }
+               
+                acNode = acNode.NextSibling;
             }
             return null;
         }

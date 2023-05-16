@@ -310,15 +310,20 @@ namespace Yodo1.MAS
                 return new Yodo1QualityServiceData();
             }
 
+            var data = new Yodo1QualityServiceData();
             try
             {
-                return JsonUtility.FromJson<Yodo1QualityServiceData>(unityWebRequest.downloadHandler.text);
+                data = JsonUtility.FromJson<Yodo1QualityServiceData>(unityWebRequest.downloadHandler.text);
             }
             catch (Exception exception)
             {
                 Debug.LogError(Yodo1U3dMas.TAG + "Failed to parse API Key." + exception);
-                return new Yodo1QualityServiceData();
             }
+            finally
+            {
+                unityWebRequest.Dispose();
+            }
+            return data;
         }
 
     }

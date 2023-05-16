@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Square
   m_EditorClassIdentifier: 
   type: 0
-  speed: 1
+  speed: 0.7
   hp: 1
   chanseMoney: 100
   moneyCount: 1

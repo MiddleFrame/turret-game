@@ -1,138 +1,96 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 using Yodo1.MAS;
 
 public class Yodo1AdsTest : MonoBehaviour
 {
-    bool enableBannerApiV2 = true;
+    [Header("Ad Placements")]
+    public InputField interstitialAdPlacement;
+    public InputField rewardAdPlacement;
+
+    bool enableInterstitialApiV2 = true;
+    bool enabledRewardVideoV2 = true;
 
     void Start()
     {
         Yodo1U3dMasCallback.OnSdkInitializedEvent += (success, error) =>
         {
             Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, success:" + success + ", error: " + error.ToString());
+            Debug.Log(Yodo1U3dMas.TAG + "OnSdkInitializedEvent, age:" + Yodo1U3dMas.GetUserAge());
             if (success)
             {
                 InitializeBannerAds();
                 InitializeInterstitialAds();
                 InitializeRewardedAds();
+                InitializeNativeAds();
             }
         };
 
+        Yodo1MasUserPrivacyConfig userPrivacyConfig = new Yodo1MasUserPrivacyConfig()
+            .titleBackgroundColor(Color.green)
+            .titleTextColor(Color.blue)
+            .contentBackgroundColor(Color.black)
+            .contentTextColor(Color.white)
+            .buttonBackgroundColor(Color.red)
+            .buttonTextColor(Color.green);
+
         Yodo1AdBuildConfig config = new Yodo1AdBuildConfig()
             .enableAdaptiveBanner(true)
-            .enableUserPrivacyDialog(true);
+            .enableUserPrivacyDialog(true)
+            .userPrivacyConfig(userPrivacyConfig);
         Yodo1U3dMas.SetAdBuildConfig(config);
 
-        Yodo1U3dMas.InitializeSdk();
-    }
-
-    void OnGUI()
-    {
-        int buttonHeight = Screen.height / 13;
-        int buttonWidth = Screen.width / 2;
-        int buttonSpace = buttonHeight / 2;
-        int startHeight = buttonHeight / 2;
-
-        if (GUI.Button(new Rect(Screen.width / 4, startHeight, buttonWidth, buttonHeight), "Show Banner Ad"))
-        {
-            ShowBannerAds();
-        }
-
-        if (GUI.Button(new Rect(Screen.width / 4, startHeight + buttonHeight + buttonSpace, buttonWidth, buttonHeight), "Dismiss Banner Ad"))
-        {
-            HideBannerAds();
-        }
-
-        if (GUI.Button(new Rect(Screen.width / 4, startHeight + buttonHeight * 2 + buttonSpace * 2, buttonWidth, buttonHeight), "Show Interstitial Ad"))
-        {
-            ShowInterstitialAds();
-        }
-
-        if (GUI.Button(new Rect(Screen.width / 4, startHeight + buttonHeight * 3 + buttonSpace * 3, buttonWidth, buttonHeight), "Show Rewarded Ad"))
-        {
-            ShowRewardedAds();
-        }
+        Yodo1U3dMas.InitializeMasSdk();
     }
 
     #region Banner Ad Methods
     private void InitializeBannerAds()
     {
-        if (enableBannerApiV2 == false)
+        InitializeBannerAdsV2();
+    }
+
+    public void ShowBannerAds(string bannerType)
+    {
+        Yodo1U3dBannerAdSize.Type type = Yodo1U3dBannerAdSize.Type.Banner;
+        if (!string.IsNullOrEmpty(bannerType))
         {
-            InitializeBannerAdsV1();
+            if (bannerType.Equals("standard"))
+            {
+                type = Yodo1U3dBannerAdSize.Type.Banner;
+            }
+            else if (bannerType.Equals("large"))
+            {
+                type = Yodo1U3dBannerAdSize.Type.LargeBanner;
+            }
+            else if (bannerType.Equals("IAB"))
+            {
+                type = Yodo1U3dBannerAdSize.Type.IABMediumRectangle;
+            }
+            else if (bannerType.Equals("smart"))
+            {
+                type = Yodo1U3dBannerAdSize.Type.SmartBanner;
+            }
+            else if (bannerType.Equals("adaptive"))
+            {
+                type = Yodo1U3dBannerAdSize.Type.AdaptiveBanner;
+            }
         }
-        else
-        {
-            InitializeBannerAdsV2();
-        }
+        ShowBannerAdsV2(type);
     }
 
-    private void ShowBannerAds()
+    public void HideAllBannerAds()
     {
-        if (enableBannerApiV2 == false)
-        {
-            ShowBannerAdsV1();
-        }
-        else
-        {
-            ShowBannerAdsV2();
-        }
-    }
-
-    private void HideBannerAds()
-    {
-        if (enableBannerApiV2 == false)
-        {
-            HideBannerAdsV1();
-        }
-        else
-        {
-            HideBannerAdsV2();
-        }
-    }
-    #endregion
-
-    #region Banner Ad Methods - V1
-    private void InitializeBannerAdsV1()
-    {
-        Yodo1U3dMasCallback.Banner.OnAdOpenedEvent += OnBannerAdOpenedEvent;
-        Yodo1U3dMasCallback.Banner.OnAdClosedEvent += OnBannerAdClosedEvent;
-        Yodo1U3dMasCallback.Banner.OnAdErrorEvent += OnBannerAdErrorEvent;
-
-        ShowBannerAdsV1();
-    }
-
-    private void OnBannerAdErrorEvent(Yodo1U3dAdError adError)
-    {
-        Debug.Log(Yodo1U3dMas.TAG + "Banner ad error - " + adError.ToString());
-    }
-
-    private void OnBannerAdOpenedEvent()
-    {
-        Debug.Log(Yodo1U3dMas.TAG + "Banner ad opened");
-    }
-
-    private void OnBannerAdClosedEvent()
-    {
-        Debug.Log(Yodo1U3dMas.TAG + "Banner ad closed");
-    }
-
-    private void ShowBannerAdsV1()
-    {
-        int align = Yodo1U3dBannerAlign.BannerTop | Yodo1U3dBannerAlign.BannerHorizontalCenter;
-        Yodo1U3dMas.ShowBannerAd(align);
-    }
-
-    private void HideBannerAdsV1()
-    {
-        Yodo1U3dMas.DismissBannerAd();
+        HideAllBannerAdsV2();
     }
     #endregion
 
     #region Banner Ad Methods - V2
     Yodo1U3dBannerAdView bannerAdView = null;
-    Yodo1U3dBannerAdView bannerAdView2 = null;
+    Yodo1U3dBannerAdView standardBannerAdView = null;
+    Yodo1U3dBannerAdView largeBannerAdView = null;
+    Yodo1U3dBannerAdView IABBannerAdView = null;
+    Yodo1U3dBannerAdView smartBannerAdView = null;
+    Yodo1U3dBannerAdView adaptiveBannerAdView = null;
 
     /// <summary>
     /// The banner is displayed automatically after loaded
@@ -146,11 +104,8 @@ public class Yodo1AdsTest : MonoBehaviour
             bannerAdView = null;
         }
 
-        // Create a 320x50 banner at top of the screen
-        bannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
-
-        // Create a 320x50 banner ad at coordinate (0,50) on screen.
-        //bannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, 0, 50);
+        // Create a 320x50 banner
+        bannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
 
         // Add Events
         bannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
@@ -162,32 +117,94 @@ public class Yodo1AdsTest : MonoBehaviour
         // Load banner ads, the banner ad will be displayed automatically after loaded
         bannerAdView.LoadAd();
 
-
-        // Clean up banner before reusing
-        if (bannerAdView2 != null)
+        // Standard Banner
+        if (standardBannerAdView != null)
         {
-            bannerAdView2.Destroy();
-            bannerAdView2 = null;
+            standardBannerAdView.Destroy();
+            standardBannerAdView = null;
         }
 
-        // Create a adaptive banner at top of the screen
-        bannerAdView2 = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.AdaptiveBanner, Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+        // Create a 320x50 banner
+        standardBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.Banner, Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
 
         // Add Events
-        bannerAdView2.OnAdLoadedEvent += OnBannerAdLoadedEvent;
-        bannerAdView2.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
-        bannerAdView2.OnAdOpenedEvent += OnBannerAdOpenedEvent;
-        bannerAdView2.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
-        bannerAdView2.OnAdClosedEvent += OnBannerAdClosedEvent;
+        standardBannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        standardBannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        standardBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        standardBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        standardBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
 
-        // Load banner ads, the banner ad will be displayed automatically after loaded
-        bannerAdView2.LoadAd();
+        // Large Banner
+        if (largeBannerAdView != null)
+        {
+            largeBannerAdView.Destroy();
+            largeBannerAdView = null;
+        }
+
+        // Create a 320x100 banner 
+        largeBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.LargeBanner, Yodo1U3dBannerAdPosition.BannerLeft | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+
+        // Add Events
+        largeBannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        largeBannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        largeBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        largeBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        largeBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+
+        // IAB Banner
+        if (IABBannerAdView != null)
+        {
+            IABBannerAdView.Destroy();
+            IABBannerAdView = null;
+        }
+
+        // Create a 300x250 banner
+        IABBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.IABMediumRectangle, Yodo1U3dBannerAdPosition.BannerRight | Yodo1U3dBannerAdPosition.BannerVerticalCenter);
+
+        // Add Events
+        IABBannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        IABBannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        IABBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        IABBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        IABBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+
+        // Smart Banner
+        if (smartBannerAdView != null)
+        {
+            smartBannerAdView.Destroy();
+            smartBannerAdView = null;
+        }
+
+        smartBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.SmartBanner, Yodo1U3dBannerAdPosition.BannerBottom | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+
+        // Add Events
+        smartBannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        smartBannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        smartBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        smartBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        smartBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
+
+        // Adaptive Banner
+        if (adaptiveBannerAdView != null)
+        {
+            adaptiveBannerAdView.Destroy();
+            adaptiveBannerAdView = null;
+        }
+
+        adaptiveBannerAdView = new Yodo1U3dBannerAdView(Yodo1U3dBannerAdSize.AdaptiveBanner, Yodo1U3dBannerAdPosition.BannerTop | Yodo1U3dBannerAdPosition.BannerHorizontalCenter);
+
+        // Add Events
+        adaptiveBannerAdView.OnAdLoadedEvent += OnBannerAdLoadedEvent;
+        adaptiveBannerAdView.OnAdFailedToLoadEvent += OnBannerAdFailedToLoadEvent;
+        adaptiveBannerAdView.OnAdOpenedEvent += OnBannerAdOpenedEvent;
+        adaptiveBannerAdView.OnAdFailedToOpenEvent += OnBannerAdFailedToOpenEvent;
+        adaptiveBannerAdView.OnAdClosedEvent += OnBannerAdClosedEvent;
     }
 
     private void OnBannerAdLoadedEvent(Yodo1U3dBannerAdView adView)
     {
         // Banner ad is ready to be shown.
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad loaded");
+        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad loaded, " + adView.ToJsonString());
     }
 
     private void OnBannerAdFailedToLoadEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
@@ -197,7 +214,7 @@ public class Yodo1AdsTest : MonoBehaviour
 
     private void OnBannerAdOpenedEvent(Yodo1U3dBannerAdView adView)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad opened");
+        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad opened, " + adView.ToJsonString());
     }
 
     private void OnBannerAdFailedToOpenEvent(Yodo1U3dBannerAdView adView, Yodo1U3dAdError adError)
@@ -207,34 +224,125 @@ public class Yodo1AdsTest : MonoBehaviour
 
     private void OnBannerAdClosedEvent(Yodo1U3dBannerAdView adView)
     {
-        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad closed");
+        Debug.Log(Yodo1U3dMas.TAG + "BannerV2 ad closed, " + adView.ToJsonString());
     }
 
     /// <summary>
     /// (Optional) Show banner ads
     /// </summary>
-    private void ShowBannerAdsV2()
+    private void ShowBannerAdsV2(Yodo1U3dBannerAdSize.Type type)
     {
-        if (bannerAdView != null)
+        if (type == Yodo1U3dBannerAdSize.Type.Banner)
         {
-            bannerAdView.Show();
+            if (standardBannerAdView != null)
+            {
+                // Load banner ads, the banner ad will be displayed automatically after loaded
+                standardBannerAdView.LoadAd();
+            }
+        }
+        else if (type == Yodo1U3dBannerAdSize.Type.LargeBanner)
+        {
+            if (largeBannerAdView != null)
+            {
+                // Load banner ads, the banner ad will be displayed automatically after loaded
+                largeBannerAdView.LoadAd();
+            }
+        }
+        else if (type == Yodo1U3dBannerAdSize.Type.IABMediumRectangle)
+        {
+            if (IABBannerAdView != null)
+            {
+                // Load banner ads, the banner ad will be displayed automatically after loaded
+                IABBannerAdView.LoadAd();
+            }
+        }
+        else if (type == Yodo1U3dBannerAdSize.Type.SmartBanner)
+        {
+            if (smartBannerAdView != null)
+            {
+                // Load banner ads, the banner ad will be displayed automatically after loaded
+                smartBannerAdView.LoadAd();
+            }
+        }
+        else if (type == Yodo1U3dBannerAdSize.Type.AdaptiveBanner)
+        {
+
+            if (adaptiveBannerAdView != null)
+            {
+                // Load banner ads, the banner ad will be displayed automatically after loaded
+                adaptiveBannerAdView.LoadAd();
+            }
         }
     }
 
     /// <summary>
     /// (Optional) Hide banner ads
     /// </summary>
-    private void HideBannerAdsV2()
+    private void HideAllBannerAdsV2()
     {
         if (bannerAdView != null)
         {
             bannerAdView.Hide();
+        }
+        if (standardBannerAdView != null)
+        {
+            standardBannerAdView.Hide();
+        }
+        if (largeBannerAdView != null)
+        {
+            largeBannerAdView.Hide();
+        }
+        if (IABBannerAdView != null)
+        {
+            IABBannerAdView.Hide();
+        }
+        if (smartBannerAdView != null)
+        {
+            smartBannerAdView.Hide();
+        }
+        if (adaptiveBannerAdView != null)
+        {
+            adaptiveBannerAdView.Hide();
         }
     }
     #endregion
 
     #region Interstitial Ad Methods
     private void InitializeInterstitialAds()
+    {
+        if (!enableInterstitialApiV2)
+        {
+            InitializeInterstitialAdsV1();
+        }
+        else
+        {
+            InitializeInterstitialAdsV2();
+        }
+    }
+
+    public void ShowInterstitialAds()
+    {
+        string adPlacement = string.Empty;
+        if (interstitialAdPlacement != null && !string.IsNullOrEmpty(interstitialAdPlacement.text))
+        {
+            adPlacement = interstitialAdPlacement.text;
+        }
+
+        if (!enableInterstitialApiV2)
+        {
+            ShowInterstitialAdsV1(adPlacement);
+        }
+        else
+        {
+            ShowInterstitialAdsV2(adPlacement);
+        }
+
+    }
+    #endregion
+
+    #region Interstitial Ad Methods - V1
+
+    private void InitializeInterstitialAdsV1()
     {
         Yodo1U3dMasCallback.Interstitial.OnAdOpenedEvent += OnInterstitialAdOpenedEvent;
         Yodo1U3dMasCallback.Interstitial.OnAdClosedEvent += OnInterstitialAdClosedEvent;
@@ -256,21 +364,120 @@ public class Yodo1AdsTest : MonoBehaviour
         Debug.Log(Yodo1U3dMas.TAG + "Interstitial ad error - " + adError.ToString());
     }
 
-    private void ShowInterstitialAds()
+    private void ShowInterstitialAdsV1(string adPlacement)
     {
         if (Yodo1U3dMas.IsInterstitialAdLoaded())
         {
-            Yodo1U3dMas.ShowInterstitialAd();
+            if (string.IsNullOrEmpty(adPlacement))
+            {
+                Yodo1U3dMas.ShowInterstitialAd();
+            }
+            else
+            {
+                Yodo1U3dMas.ShowInterstitialAd(adPlacement);
+            }
         }
         else
         {
             Debug.Log(Yodo1U3dMas.TAG + "Interstitial ad has not been cached.");
         }
     }
+
     #endregion
+
+    #region Interstitial Ad Methods - V2
+    private void InitializeInterstitialAdsV2()
+    {
+        Yodo1U3dInterstitialAd.GetInstance().OnAdLoadedEvent += OnInterstitialAdLoadedEvent;
+        Yodo1U3dInterstitialAd.GetInstance().OnAdLoadFailedEvent += OnInterstitialAdLoadFailedEvent;
+        Yodo1U3dInterstitialAd.GetInstance().OnAdOpenedEvent += OnInterstitialAdOpenedEvent;
+        Yodo1U3dInterstitialAd.GetInstance().OnAdOpenFailedEvent += OnInterstitialAdOpenFailedEvent;
+        Yodo1U3dInterstitialAd.GetInstance().OnAdClosedEvent += OnInterstitialAdClosedEvent;
+    }
+
+    public void LoadInterstitialAdV2()
+    {
+        if (!enableInterstitialApiV2)
+        {
+            return;
+        }
+        Yodo1U3dInterstitialAd.GetInstance().LoadAd();
+    }
+
+    private void OnInterstitialAdLoadedEvent(Yodo1U3dInterstitialAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdLoadedEvent event received");
+    }
+
+    private void OnInterstitialAdLoadFailedEvent(Yodo1U3dInterstitialAd ad, Yodo1U3dAdError adError)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdLoadFailedEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnInterstitialAdOpenedEvent(Yodo1U3dInterstitialAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdOpenedEvent event received");
+    }
+
+    private void OnInterstitialAdOpenFailedEvent(Yodo1U3dInterstitialAd ad, Yodo1U3dAdError adError)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdOpenFailedEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnInterstitialAdClosedEvent(Yodo1U3dInterstitialAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnInterstitialAdClosedEvent event received");
+    }
+
+    private void ShowInterstitialAdsV2(string adPlacement)
+    {
+        if (string.IsNullOrEmpty(adPlacement))
+        {
+            Yodo1U3dInterstitialAd.GetInstance().ShowAd();
+        }
+        else
+        {
+            Yodo1U3dInterstitialAd.GetInstance().ShowAd(adPlacement);
+        }
+    }
+
+    #endregion
+
 
     #region Reward video Ad Methods
     private void InitializeRewardedAds()
+    {
+        if (!enableInterstitialApiV2)
+        {
+            InitializeRewardedAdsV1();
+        }
+        else
+        {
+            InitializeRewardedAdsV2();
+        }
+    }
+
+    public void ShowRewardedAds()
+    {
+        string adPlacement = string.Empty;
+        if (rewardAdPlacement != null && !string.IsNullOrEmpty(rewardAdPlacement.text))
+        {
+            adPlacement = rewardAdPlacement.text;
+        }
+
+        if (!enabledRewardVideoV2)
+        {
+            ShowRewardedAdsV1(adPlacement);
+        }
+        else
+        {
+            ShowRewardedAdsV2(adPlacement);
+        }
+    }
+    #endregion
+
+    #region Reward video Ad Methods - V1
+    private void InitializeRewardedAdsV1()
     {
         Yodo1U3dMasCallback.Rewarded.OnAdOpenedEvent += OnRewardedAdOpenedEvent;
         Yodo1U3dMasCallback.Rewarded.OnAdClosedEvent += OnRewardedAdClosedEvent;
@@ -298,16 +505,167 @@ public class Yodo1AdsTest : MonoBehaviour
         Debug.Log(Yodo1U3dMas.TAG + "Rewarded ad error - " + adError.ToString());
     }
 
-    private void ShowRewardedAds()
+    private void ShowRewardedAdsV1(string adPlacement)
     {
         if (Yodo1U3dMas.IsRewardedAdLoaded())
         {
-            Yodo1U3dMas.ShowRewardedAd();
+            if (string.IsNullOrEmpty(adPlacement))
+            {
+                Yodo1U3dMas.ShowRewardedAd();
+            }
+            else
+            {
+                Yodo1U3dMas.ShowRewardedAd(adPlacement);
+            }
         }
         else
         {
             Debug.Log(Yodo1U3dMas.TAG + "Reward video ad has not been cached.");
         }
+    }
+
+    #endregion
+
+    #region Reward video Ad Methods - V2
+
+    private void InitializeRewardedAdsV2()
+    {
+        Yodo1U3dRewardAd.GetInstance().OnAdLoadedEvent += OnRewardAdLoadedEvent;
+        Yodo1U3dRewardAd.GetInstance().OnAdLoadFailedEvent += OnRewardAdLoadFailedEvent;
+        Yodo1U3dRewardAd.GetInstance().OnAdOpenedEvent += OnRewardAdOpenedEvent;
+        Yodo1U3dRewardAd.GetInstance().OnAdOpenFailedEvent += OnRewardAdOpenFailedEvent;
+        Yodo1U3dRewardAd.GetInstance().OnAdClosedEvent += OnRewardAdClosedEvent;
+        Yodo1U3dRewardAd.GetInstance().OnAdEarnedEvent += OnRewardAdEarnedEvent;
+    }
+
+    public void LoadRewardAdV2()
+    {
+        if (!enabledRewardVideoV2)
+        {
+            return;
+        }
+        Yodo1U3dRewardAd.GetInstance().LoadAd();
+    }
+
+    private void OnRewardAdLoadedEvent(Yodo1U3dRewardAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdLoadedEvent event received");
+    }
+
+    private void OnRewardAdLoadFailedEvent(Yodo1U3dRewardAd ad, Yodo1U3dAdError adError)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdLoadFailedEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnRewardAdOpenedEvent(Yodo1U3dRewardAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdOpenedEvent event received");
+    }
+
+    private void OnRewardAdOpenFailedEvent(Yodo1U3dRewardAd ad, Yodo1U3dAdError adError)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdOpenFailedEvent event received with error: " + adError.ToString());
+    }
+
+    private void OnRewardAdClosedEvent(Yodo1U3dRewardAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdClosedEvent event received");
+    }
+
+    private void OnRewardAdEarnedEvent(Yodo1U3dRewardAd ad)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "OnRewardAdEarnedEvent event received");
+    }
+
+    private void ShowRewardedAdsV2(string adPlacement)
+    {
+        if (string.IsNullOrEmpty(adPlacement))
+        {
+            Yodo1U3dRewardAd.GetInstance().ShowAd();
+        }
+        else
+        {
+            Yodo1U3dRewardAd.GetInstance().ShowAd(adPlacement);
+        }
+    }
+
+    #endregion
+
+    #region Yodo1U3dNativeAdView
+    Yodo1U3dNativeAdView nativeAdView = null;
+    Yodo1U3dNativeAdView nativeAdView2 = null;
+
+
+    /// <summary>
+    /// The banner is displayed automatically after loaded
+    /// </summary>
+    private void InitializeNativeAds()
+    {
+        // Clean up native before reusing
+        if (nativeAdView != null)
+        {
+            nativeAdView.Destroy();
+            nativeAdView = null;
+        }
+
+        nativeAdView = new Yodo1U3dNativeAdView(Yodo1U3dNativeAdPosition.NativeTop | Yodo1U3dNativeAdPosition.NativeLeft, 0, 0, 360, 300);
+
+        nativeAdView.SetBackgroundColor(Color.grey);
+        // Add Events
+        nativeAdView.OnAdLoadedEvent += OnNativeAdLoadedEvent;
+        nativeAdView.OnAdFailedToLoadEvent += OnNativeAdFailedToLoadEvent;
+
+
+        // Clean up native before reusing
+        if (nativeAdView2 != null)
+        {
+            nativeAdView2.Destroy();
+            nativeAdView2 = null;
+        }
+
+        nativeAdView2 = new Yodo1U3dNativeAdView(Yodo1U3dNativeAdPosition.NativeTop | Yodo1U3dNativeAdPosition.NativeRight, 0, 0, 360, 300);
+
+        nativeAdView2.SetBackgroundColor(Color.grey);
+        // Add Events
+        nativeAdView2.OnAdLoadedEvent += OnNativeAdLoadedEvent;
+        nativeAdView2.OnAdFailedToLoadEvent += OnNativeAdFailedToLoadEvent;
+    }
+
+    public void ShowNativeAd(string adPlacement)
+    {
+        // Load native ads, the native ad will be displayed automatically after loaded
+        if (nativeAdView != null && adPlacement.Equals("test_native_placement_left"))
+        {
+            nativeAdView.SetAdPlacement(adPlacement);
+            nativeAdView.LoadAd();
+        }
+        if (nativeAdView2 != null && adPlacement.Equals("test_native_placement_right"))
+        {
+            nativeAdView2.SetAdPlacement(adPlacement);
+            nativeAdView2.LoadAd();
+        }
+    }
+
+    public void HideAllNativeAds()
+    {
+        if (nativeAdView != null)
+        {
+            nativeAdView.Hide();
+        }
+        if (nativeAdView2 != null)
+        {
+            nativeAdView2.Hide();
+        }
+    }
+
+    private void OnNativeAdLoadedEvent(Yodo1U3dNativeAdView adView)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "Native ad loaded");
+    }
+
+    private void OnNativeAdFailedToLoadEvent(Yodo1U3dNativeAdView adView, Yodo1U3dAdError adError)
+    {
+        Debug.Log(Yodo1U3dMas.TAG + "Native ad failed to load with error code: " + adError.ToString());
     }
     #endregion
 }

@@ -55,6 +55,12 @@
         config.indexId = @"";
     }
     
+    if (json[@"backgroundColor"]) {
+        config.backgroundColor = json[@"backgroundColor"];
+    } else {
+        config.backgroundColor = nil;
+    }
+    
     return config;
 }
 

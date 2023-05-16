@@ -7,26 +7,40 @@ public class Shoot : MonoBehaviour
 {
     public static Shoot instance;
     public static int damage;
-    [SerializeField] Animation _shootAnim;
-    [SerializeField] GameObject[] _bulletsPool;
-    [SerializeField] GameObject _shootPosition;
-    [SerializeField] AudioSource _shootSound;
-    [SerializeField] AudioClip _shoot;
-    [SerializeField] Image _fillImage;
+
+    [SerializeField]
+    Animation _shootAnim;
+
+    [SerializeField]
+    GameObject[] _bulletsPool;
+
+    [SerializeField]
+    GameObject _shootPosition;
+
+    [SerializeField]
+    AudioSource _shootSound;
+
+    [SerializeField]
+    AudioClip _shoot;
+
+    [SerializeField]
+    Image _fillImage;
+
     //[SerializeField] ParticleSystem particleSystemShoot;
     Vector2[] _velocites;
     bool _isCooldown = true;
     Coroutine _cooldown;
+
     private void Awake()
     {
         instance = this;
     }
+
     public void Shooting()
     {
-
         if (_isCooldown)
         {
-            for (int i = 0; i < GameManager.upgrades.ballCount; i++)
+            for (int i = 0; i < _bulletsPool.Length; i++)
             {
                 if (!_bulletsPool[i].activeSelf)
                 {
@@ -34,8 +48,11 @@ public class Shoot : MonoBehaviour
                     _bulletsPool[i].GetComponent<Rigidbody2D>().angularVelocity = 0f;
                     _bulletsPool[i].transform.position = _shootPosition.transform.position;
                     _bulletsPool[i].SetActive(true);
-                    _bulletsPool[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(Mathf.Cos(gameObject.transform.rotation.eulerAngles.z * Mathf.Deg2Rad) * GameManager.upgrades.bulletSpeed,
-                        Mathf.Sin(gameObject.transform.eulerAngles.z * Mathf.Deg2Rad) * GameManager.upgrades.bulletSpeed), ForceMode2D.Impulse);
+                    _bulletsPool[i].GetComponent<Rigidbody2D>().AddForce(new Vector2(
+                        Mathf.Cos(gameObject.transform.rotation.eulerAngles.z * Mathf.Deg2Rad) *
+                        GameManager.upgrades.bulletSpeed,
+                        Mathf.Sin(gameObject.transform.eulerAngles.z * Mathf.Deg2Rad) *
+                        GameManager.upgrades.bulletSpeed), ForceMode2D.Impulse);
                     if (_shootAnim.isPlaying)
                         _shootAnim.Stop();
                     _shootAnim.Play();
@@ -44,6 +61,7 @@ public class Shoot : MonoBehaviour
                     break;
                 }
             }
+
             _cooldown = StartCoroutine(StartCooldown());
         }
     }
@@ -57,10 +75,11 @@ public class Shoot : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             if (!GameManager.Pause)
             {
-                _fillImage.fillAmount += 0.1f/ GameManager.upgrades.shootCooldown;
+                _fillImage.fillAmount += 0.1f / GameManager.upgrades.shootCooldown;
                 cooldown += 0.1f;
             }
         }
+
         _isCooldown = true;
         _fillImage.fillAmount = 0;
     }
@@ -82,7 +101,6 @@ public class Shoot : MonoBehaviour
                 _bulletsPool[i].SetActive(false);
             }
         }
-
     }
 
     public void Pause(bool pause)
@@ -94,9 +112,7 @@ public class Shoot : MonoBehaviour
             {
                 _velocites[i] = _bulletsPool[i].GetComponent<Rigidbody2D>().velocity;
                 _bulletsPool[i].GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-
             }
-
         }
         else
         {

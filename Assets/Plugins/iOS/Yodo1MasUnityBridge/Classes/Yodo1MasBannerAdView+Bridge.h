@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGPoint customPosition;
 @property (nonatomic, copy) NSString *adPlacement;
 @property (nonatomic, copy) NSString *indexId;
+@property (nonatomic, copy) NSString *backgroundColor;
 
 @end
 

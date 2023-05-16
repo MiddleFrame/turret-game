@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public static Settings settings;
     public static PlayerStats playerStats;
     public static Upgrades upgrades;
+    public GameObject mainMoney;
     private void Awake()
     {
         instance = this;
@@ -29,7 +30,7 @@ public class GameManager : MonoBehaviour
         Blur.EnableOrDisableBlur(Pause);
         Shoot.instance.Pause(Pause);
         GameStats.MenuController = menu;
-        ChangeControl.instance.ChangeController(ChangeControl.instance.CurrentControl);
+//        ChangeControl.instance.ChangeController(ChangeControl.instance.CurrentControl);
     }
 
     private void OnApplicationQuit()

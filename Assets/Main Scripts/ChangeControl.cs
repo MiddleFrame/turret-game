@@ -22,7 +22,7 @@ public class ChangeControl : MonoBehaviour
         Debug.Log("Change Control "+i);
         Blur.EnableOrDisableBlur(false);
         CurrentControl = i;
-        GameManager.settings.Control = i;
+        //GameManager.settings.Control = i;
         for (int j=0; j < _controls.Length; j++) 
         {
             if (j != i)
@@ -61,13 +61,13 @@ public class Settings
     public float thirdControlValue;
     public bool ThemeIsDark=true;
     public bool enableSound = true;
-    public int Control;
+    //public int Control;
 
     public Settings(float firstControl =260f, float secondControl= -900f, float thirdControl=0f)
     {
         firstControlValue = firstControl;
         secondControlValue = secondControl;
        thirdControlValue= thirdControl;
-        Control = ChangeControl.instance.CurrentControl;
+        //Control = ChangeControl.instance.CurrentControl;
     }
 }

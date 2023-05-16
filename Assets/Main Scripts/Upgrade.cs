@@ -16,7 +16,7 @@ public class Upgrade : MonoBehaviour
 
     int[] _cost = new int[] { 30, 10, 10, 100, 100 };
     int[] _costMultiply = new int[] { 30, 10, 10, 100, 100 };
-    float[] _upgradeValue = new float[] {1, -0.1f, -0.1f, 0.5f, 1 };
+    float[] _upgradeValue = new float[] {100, -0.1f, -0.1f, 0.5f, 1 };
     int[] _costValue = new int[] { 30, 10, 10, 100, 100 };
 
     public int[] MaxUpgrade = new int[] { 17, 20, 25, 4, 5 };
@@ -28,7 +28,7 @@ public class Upgrade : MonoBehaviour
     }
     public void UpdateText()
     {
-        _ballCountText[1].text = GameManager.upgrades.ballCount+"";
+        _ballCountText[1].text = GameManager.upgrades.radius+"";
         _rotateTimeText[1].text = GameManager.upgrades.rotateTime+"";
         _shootCooldownText[1].text = GameManager.upgrades.shootCooldown+"";
         _bulletSpeedText[1].text = GameManager.upgrades.bulletSpeed + "";
@@ -86,7 +86,7 @@ public class Upgrade : MonoBehaviour
                 switch (i)
                 {
                 case 0:
-                    BallCount();
+                    RadiusBuy();
                     break;
                 case 1:
                     RotateTime();
@@ -116,9 +116,9 @@ public class Upgrade : MonoBehaviour
         }
     }
 
-    private void BallCount()
+    private void RadiusBuy()
     {
-        GameManager.upgrades.ballCount += (int)_upgradeValue[0];
+        GameManager.upgrades.radius += (int)_upgradeValue[0];
         Analytic.instance.BuyShopUpgrade("Ball_count");
     }
 
@@ -158,7 +158,7 @@ public class Upgrade : MonoBehaviour
 [SerializeField]
 public class Upgrades
 {
-    public int ballCount =3 ;
+    public int radius =600 ;
     public float rotateTime = 2f;
     public float shootCooldown = 3f;
     public int lifes = 1;

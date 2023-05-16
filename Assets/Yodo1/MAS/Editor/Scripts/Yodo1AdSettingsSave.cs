@@ -1,11 +1,9 @@
-﻿using System;
-
-using UnityEditor;
-using UnityEngine;
-using System.IO;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
+    using UnityEditor;
+    using UnityEngine;
+    using System.IO;
+
     public static class Yodo1AdSettingsSave
     {
         const string YODO1_RESOURCE_PATH = "Assets/Resources/Yodo1/";
@@ -47,6 +45,33 @@ namespace Yodo1.MAS
             AssetDatabase.Refresh();
         }
 
+        public static bool CheckConfiguration_iOS(Yodo1AdSettings settings)
+        {
+            if (settings == null)
+            {
+                string message = "MAS iOS settings is null, please check the configuration.";
+                Debug.LogError(Yodo1U3dMas.TAG + message);
+                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(settings.iOSSettings.AppKey.Trim()))
+            {
+                string message = "MAS iOS AppKey is null, please check the configuration.";
+                Debug.LogError(Yodo1U3dMas.TAG + message);
+                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
+                return false;
+            }
+
+            if (settings.iOSSettings.GlobalRegion && string.IsNullOrEmpty(settings.iOSSettings.AdmobAppID.Trim()))
+            {
+                string message = "MAS iOS AdMob App ID is null, please check the configuration.";
+                Debug.LogError(Yodo1U3dMas.TAG + message);
+                Yodo1AdUtils.ShowAlert("Error", message, "Ok");
+                return false;
+            }
+            return true;
+        }
     }
 
 }

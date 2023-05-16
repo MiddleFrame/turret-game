@@ -1,12 +1,11 @@
-﻿using System;
-using UnityEditor;
-using UnityEngine;
-using System.IO;
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.PackageManager;
-
-namespace Yodo1.MAS
+﻿namespace Yodo1.MAS
 {
+    using System;
+    using UnityEngine;
+    using System.IO;
+    using UnityEditor.PackageManager.Requests;
+    using UnityEditor.PackageManager;
+
     public static class Yodo1AdBuildCheck
     {
         public static bool HasConflict()
@@ -35,17 +34,6 @@ namespace Yodo1.MAS
             }
         }
 
-        //private static void Progress()
-        //{
-        //    if (Request.IsCompleted) {
-        //        if (Request.Status == StatusCode.Success) {
-
-        //        }else if (Request.Status >= StatusCode.Failure) {
-        //            UnityEngine.Debug.Log(Request.Error.message);
-        //        }
-        //        EditorApplication.update -= Progress;
-        //    }
-        //}
         public static bool IsFBSDKCoreKitExist()
         {
             string dependencies_path = Directory.GetCurrentDirectory() + "/Assets/FacebookSDK/Plugins/Editor/Dependencies.xml";
@@ -155,7 +143,6 @@ namespace Yodo1.MAS
             {
                 Debug.LogError(Yodo1U3dMas.TAG + "DeleteTempFile error : tempPaht " + tempPaht + " error: " + e.Message.ToString());
             }
-
         }
 
         public static void DeleteFile(string file)
@@ -172,7 +159,6 @@ namespace Yodo1.MAS
                 Debug.LogError(Yodo1U3dMas.TAG + "DeleteFile error : file " + file + " error: " + e.Message.ToString());
             }
         }
-
 
         public static void DeleteDir(string file)
         {
@@ -209,19 +195,14 @@ namespace Yodo1.MAS
                     //Delete empty dir
                     Directory.Delete(file);
                     Console.WriteLine(file);
-
                 }
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message.ToString());
             }
         }
-
-
     }
-
 }
 
 
